@@ -1,3 +1,5 @@
+[![Swift](https://github.com/Tavernari/DIContainer/actions/workflows/swift.yml/badge.svg?branch=main)](https://github.com/Tavernari/DIContainer/actions/workflows/swift.yml)
+
 # 🏺 DIContainer Swift
 
 It is an ultra-light dependency injection container made to help developers to handle dependencies easily.
