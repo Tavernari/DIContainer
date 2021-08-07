@@ -34,6 +34,15 @@ Container.standard.register(.by(type: FetchService.self, withKey: "gitlab")) { _
 }
 ```
 
+### Resolving using other dependencies
+
+```Swift
+Container.standard.register(.gitlabService) { resolver in
+    let externalService = resolver.resolve(.externalService)
+    return GitlabService(externalService)
+}
+```
+
 ### Creating shortcuts to identify by extension
 
 ```Swift
@@ -44,7 +53,7 @@ extension InjectIdentifier {
 }
 ```
 
-Registering with shortcuts
+### Registering with shortcuts
 
 ```Swift
 Container.standard.register(.githubService) { _ in
