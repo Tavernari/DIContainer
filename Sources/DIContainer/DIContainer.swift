@@ -14,16 +14,16 @@ public protocol Injectable: Resolvable, AnyObject {
 
     var dependencies: [AnyHashable: Any] { get set }
 
-    func register<Value>(_ identifier: InjectIdentifier<Value>, _ resolve: (Resolvable) -> Value)
+    func register<Value>(_ identifier: InjectIdentifier<Value>, _ resolve: (Resolvable) throws -> Value)
 
     func remove<Value>(_ identifier: InjectIdentifier<Value>)
 }
 
 public extension Injectable {
 
-    func register<Value>(_ identifier: InjectIdentifier<Value>, _ resolve: (Resolvable) -> Value) {
+    func register<Value>(_ identifier: InjectIdentifier<Value>, _ resolve: (Resolvable) throws -> Value) {
         
-        self.dependencies[identifier] = resolve( self )
+        self.dependencies[identifier] = try? resolve( self )
     }
 
     func remove<Value>(_ identifier: InjectIdentifier<Value>) {
