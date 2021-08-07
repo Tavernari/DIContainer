@@ -98,3 +98,30 @@ var gitlabService: FetchService
 @InjectedSafe
 var externalService: ExternalSingletonService?
 ```
+
+## Instalation
+
+### Swift Package Manager
+
+in `Package.swift` add the following:
+
+```swift
+dependencies: [
+    // Dependencies declare other packages that this package depends on.
+    // .package(url: /* package url */, from: "1.0.0"),
+    .package(url: "https://github.com/Tavernari/DIContainer", from: "0.1.0")
+],
+targets: [
+    .target(
+        name: "MyProject",
+        dependencies: [..., "DIContainer"]
+    )
+    ...
+]
+```
+
+### Cocoapds
+
+```ruby
+pod 'DIContainer-swift', '~> 0.1.0'
+```
