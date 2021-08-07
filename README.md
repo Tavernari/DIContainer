@@ -4,7 +4,7 @@ It is an ultra-light dependency injection container made to help developers to h
 
 ## Registering dependencies
 
-To register something on container you can use directy the InjectIdentifier, or you can make an extension to create helpers to identify it.
+To register something on Container, you can use the InjectIdentifier directly or make an extension to create helpers to identify it.
 
 ### Using key directly
 
@@ -65,7 +65,7 @@ Container.standard.register(.externalService) { _ in
 
 ## Resolving dependencies
 
-To resolve your dependencies you have two ways, you can access the `Container` directly or you can use `@Injected` to do it automaticly.
+To resolve your dependencies, you have two ways. You can access the `Container` directly or use `@Injected` to do it automatically.
 
 ### Using resolve from Container
 
@@ -77,7 +77,7 @@ let externalService = try? Container.standard.resolve(.by(type: ExternalSingleto
 
 ### Using injection with @propertyWrapper
 
-If you use `@Injected` and not have injected yet, it will call `fatalError` with an error message, if you do not want this behaviour you should use `@InjectedSafe`, but using `@InjectedSafe` you will get an optional result.
+If you use `@Injected` and have not injected yet, it will call `fatalError` with an error message. If you do not want this behavior, you should use `@InjectedSafe`, but using `@InjectedSafe`, you will get an optional result.
 
 ```Swift
 @Injected(.githubService)
