@@ -1,4 +1,4 @@
-# 🏺 Slight DI Container
+# 🏺 DIContainer Swift
 
 It is an ultra-light dependency injection container made to help developers to handle dependencies easily.
 
