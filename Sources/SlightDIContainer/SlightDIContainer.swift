@@ -1,9 +1,13 @@
+public struct SlightDIContainer {
+
+}
+
 public protocol Resolvable {
 
     func resolve<Value>(_ identifier: InjectIdentifier<Value>) throws -> Value
 }
 
-enum ResolvableError: Error {
+public enum ResolvableError: Error {
     
     case dependencyNotFound(Any.Type?, String?)
 }
