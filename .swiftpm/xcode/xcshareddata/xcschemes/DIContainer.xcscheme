@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "SlightDIContainer"
-               BuildableName = "SlightDIContainer"
-               BlueprintName = "SlightDIContainer"
+               BlueprintIdentifier = "DIContainer"
+               BuildableName = "DIContainer"
+               BlueprintName = "DIContainer"
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
@@ -28,9 +28,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "SlightDIContainerTests"
-               BuildableName = "SlightDIContainerTests"
-               BlueprintName = "SlightDIContainerTests"
+               BlueprintIdentifier = "DIContainerTests"
+               BuildableName = "DIContainerTests"
+               BlueprintName = "DIContainerTests"
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
@@ -47,9 +47,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "SlightDIContainerTests"
-               BuildableName = "SlightDIContainerTests"
-               BlueprintName = "SlightDIContainerTests"
+               BlueprintIdentifier = "DIContainerTests"
+               BuildableName = "DIContainerTests"
+               BlueprintName = "DIContainerTests"
                ReferencedContainer = "container:">
             </BuildableReference>
          </TestableReference>
@@ -75,9 +75,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "SlightDIContainer"
-            BuildableName = "SlightDIContainer"
-            BlueprintName = "SlightDIContainer"
+            BlueprintIdentifier = "DIContainer"
+            BuildableName = "DIContainer"
+            BlueprintName = "DIContainer"
             ReferencedContainer = "container:">
          </BuildableReference>
       </MacroExpansion>

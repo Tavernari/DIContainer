@@ -1,5 +1,5 @@
 import XCTest
-@testable import SlightDIContainer
+@testable import DIContainer
 
 final class SlightDIContainerTests: XCTestCase {
   
