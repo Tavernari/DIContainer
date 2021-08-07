@@ -1,10 +1,15 @@
 public protocol Resolvable {
 
-    func resolve<Value>(_ identifier: InjectIdentifier<Value>) -> Value
+    func resolve<Value>(_ identifier: InjectIdentifier<Value>) throws -> Value
 }
 
-public protocol Injectable: Resolvable {
+enum ResolvableError: Error {
+    
+    case dependencyNotFound(Any.Type?, String?)
+}
 
+public protocol Injectable: Resolvable, AnyObject {
+    
     init()
 
     var dependencies: [AnyHashable: Any] { get set }
@@ -16,20 +21,28 @@ public protocol Injectable: Resolvable {
 
 public extension Injectable {
 
-    init(with injectable: Injectable) {
-
-        self.init()
-        self.dependencies.merge(dict: injectable.dependencies)
-    }
-}
-
-private extension Dictionary {
-    
-    mutating func merge(dict: [Key: Value]){
+    func register<Value>(_ identifier: InjectIdentifier<Value>, _ resolve: (Resolvable) -> Value) {
         
-        for (k, v) in dict {
+        self.dependencies[identifier] = resolve( self )
+    }
+
+    func remove<Value>(_ identifier: InjectIdentifier<Value>) {
+        
+        self.dependencies.removeValue(forKey: identifier)
+    }
+    
+    func removeAllDependencies() {
+        
+        self.dependencies.removeAll()
+    }
+    
+    func resolve<Value>(_ identifier: InjectIdentifier<Value>) throws -> Value {
+
+        guard let dependency = dependencies[identifier] as? Value else {
             
-            updateValue(v, forKey: k)
+            throw ResolvableError.dependencyNotFound(identifier.type, identifier.key)
         }
+
+        return dependency
     }
 }

@@ -8,67 +8,44 @@
 import Foundation
 
 public class Container: Injectable {
-
-    private static func key(type: Any.Type) -> AnyHashable { ObjectIdentifier(type).hashValue }
-
-    public static let shared = Container()
+    
+    public static var standard = Container()
 
     public var dependencies: [AnyHashable: Any] = [:]
-    private var keys: [Any] = []
 
     required public init() {}
-
-    public func register<Value>(_ identifier: InjectIdentifier<Value>, _ resolve: (Resolvable) -> Value) {
-        
-        dependencies[identifier] = resolve( self )
-    }
-
-    public func remove<Value>(_ identifier: InjectIdentifier<Value>) {
-        
-        self.dependencies.removeValue(forKey: identifier)
-    }
-}
-
-extension Container: Resolvable {
-
-    public func resolve<Value>(_ identifier: InjectIdentifier<Value>) -> Value {
-
-        guard let dependency = dependencies[identifier] as? Value else {
-
-            fatalError("Could not find \(String(describing: identifier)) dependency as \(Value.self)")
-        }
-
-        return dependency
-    }
 }
 
 @propertyWrapper public struct Injected<Value> {
-
-    public init() {}
     
-    public var wrappedValue: Value = Container.shared.resolve(.by(type: Value.self))
+    public static func container() -> Injectable { Container.standard }
+
+    private let identifier: InjectIdentifier<Value>
+    private let container: Resolvable
+    public init(_ identifier: InjectIdentifier<Value>? = nil, container: Resolvable? = nil) {
+        self.identifier = identifier ?? .by(type: Value.self)
+        self.container = container ?? Self.container()
+    }
+    
+    public lazy var wrappedValue: Value = {
+        do {
+            
+            return try container.resolve(identifier)
+            
+        } catch { fatalError("Could not find dependency for \(error.localizedDescription)") }
+    }()
 }
 
-@propertyWrapper public struct WeakInjected<Value> {
+@propertyWrapper public struct InjectedSafe<Value> {
+    
+    public static func container() -> Injectable { Container.standard }
 
-    weak var service: Container?
-
-    public init() {
-
-        self.service = Container.shared
+    private let identifier: InjectIdentifier<Value>
+    private let container: Resolvable
+    public init(_ identifier: InjectIdentifier<Value>? = nil, container: Resolvable? = nil) {
+        self.identifier = identifier ?? .by(type: Value.self)
+        self.container = container ?? Self.container()
     }
-
-    public var wrappedValue: Value? { service?.resolve(.by(type: Value.self)) }
-}
-
-@propertyWrapper public struct UnownedInjected<Value> {
-
-    unowned var service: Container
-
-    public init() {
-
-        self.service = Container.shared
-    }
-
-    public var wrappedValue: Value { service.resolve(.by(type: Value.self)) }
+    
+    public lazy var wrappedValue: Value? = try? container.resolve(identifier)
 }
