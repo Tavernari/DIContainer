@@ -125,5 +125,5 @@ targets: [
 ### Cocoapds
 
 ```ruby
-pod 'DIContainer-swift', '~> 0.1.0'
+pod 'DIContainer-swift', '~> 0.1.1'
 ```
