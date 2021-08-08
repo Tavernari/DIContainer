@@ -40,7 +40,7 @@ Container.standard.register(.by(type: FetchService.self, withKey: "gitlab")) { _
 
 ```Swift
 Container.standard.register(.gitlabService) { resolver in
-    let externalService = resolver.resolve(.externalService)
+    let externalService = try resolver.resolve(.externalService)
     return GitlabService(externalService)
 }
 ```
@@ -94,11 +94,11 @@ If you use `@Injected` and have not injected yet, it will call `fatalError` with
 @Injected(.githubService)
 var githubService: FetchService
 
-@Injected(.by(type: FetchService.self, withKey: "gitlab"))
-var gitlabService: FetchService
+@InjectedSafe(.by(type: FetchService.self, withKey: "gitlab"))
+var gitlabService: FetchService?
 
-@InjectedSafe
-var externalService: ExternalSingletonService?
+@Injected
+var externalService: ExternalSingletonService
 ```
 
 ## Instalation
