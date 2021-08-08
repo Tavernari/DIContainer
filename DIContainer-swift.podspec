@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name             = "DIContainer-swift"
-    s.version          = "0.1.0"
+    s.version          = "0.1.1"
     s.summary          = "Ultra-light dependency injection container framework for Swift"
     s.description      = "DIContainer is a dependency injection container framework for Swift, to help for handle the dependencies in your system."
   
