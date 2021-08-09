@@ -13,10 +13,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: coherent-swift
-      uses: arthurpalves/coherent-swift@0.5.5
-      with:
-        source: Sources/
     - name: Build
       run: swift build -v
     - name: Run tests
