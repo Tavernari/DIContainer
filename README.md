@@ -3,6 +3,20 @@
 # 🏺 DIContainer Swift
 
 It is an ultra-light dependency injection container made to help developers to handle dependencies easily.
+We know that handle with dependency injection is hard and generates boilerplate code a lot. 
+The main idea of this lib is to keep it simples and light, it should be direct and intuitive, even using the property wrapper.
+
+#### What is Dependency Injection?
+
+> The intent behind dependency injection is to achieve separation of concerns of construction and use of objects. This can increase readability and code reuse.
+> Dependency injection is one form of the broader technique of inversion of control. A client who wants to call some services should not have to know how to construct those services. Instead, the client delegates to external code (the injector). The client is not aware of the injector.[2] The injector passes the services, which might exist or be constructed by the injector itself, to the client. The client then uses the services.
+Font - [Wikipedia](https://en.wikipedia.org/wiki/Dependency_injection)
+
+#### What is DI Container?
+
+> In the previous chapter, we learned how to implement the Dependency Injection pattern to achieve loose coupled classes. IoC Container (a.k.a. DI Container) is a framework for implementing automatic dependency injection. It manages object creation and it's life-time, and also injects dependencies to the class.
+> The IoC container creates an object of the specified class and also injects all the dependency objects through a constructor, a property or a method at run time and disposes it at the appropriate time. This is done so that we don't have to create and manage objects manually.
+Font - [tutorialsteacher](https://www.tutorialsteacher.com/ioc/ioc-container)
 
 ## Registering dependencies
 
