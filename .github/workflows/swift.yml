@@ -13,8 +13,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: GitHub Action for SwiftLint
-      uses: norio-nomura/action-swiftlint@3.2.1
     - name: coherent-swift
       uses: arthurpalves/coherent-swift@0.5.5
       with:
