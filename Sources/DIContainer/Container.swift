@@ -32,7 +32,7 @@ public class Container: Injectable {
             
             return try container.resolve(identifier)
             
-        } catch { fatalError("Could not find dependency for \(error.localizedDescription)") }
+        } catch { fatalError( error.localizedDescription ) }
     }()
 }
 
