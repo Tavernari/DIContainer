@@ -111,7 +111,7 @@ in `Package.swift` add the following:
 dependencies: [
     // Dependencies declare other packages that this package depends on.
     // .package(url: /* package url */, from: "1.0.0"),
-    .package(url: "https://github.com/Tavernari/DIContainer", from: "0.1.0")
+    .package(url: "https://github.com/Tavernari/DIContainer", from: "0.2.0")
 ],
 targets: [
     .target(
@@ -125,5 +125,5 @@ targets: [
 ### Cocoapds
 
 ```ruby
-pod 'DIContainer-swift', '~> 0.1.1'
+pod 'DIContainer-swift', '~> 0.2.0'
 ```
