@@ -36,13 +36,8 @@ extension InjectIdentifier: Hashable {
 
 public extension InjectIdentifier {
     
-    static func by(type: Value.Type, withKey key: String? = nil ) -> InjectIdentifier {
+    static func by(type: Value.Type? = nil, key: String? = nil ) -> InjectIdentifier {
 
         return .init(type: type, key: key)
-    }
-
-    static func by(key: String) -> InjectIdentifier {
-
-        return .init(key: key)
     }
 }

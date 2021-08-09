@@ -27,11 +27,11 @@ Container.standard.register(.by(type: FetchService.self)) { _ in
 ### Using type with key variants
 
 ```Swift
-Container.standard.register(.by(type: FetchService.self, withKey: "github")) { _ in
+Container.standard.register(.by(type: FetchService.self, key: "github")) { _ in
     return GitHubService()
 }
 
-Container.standard.register(.by(type: FetchService.self, withKey: "gitlab")) { _ in
+Container.standard.register(.by(type: FetchService.self, key: "gitlab")) { _ in
     return GitlabService()
 }
 ```
@@ -49,8 +49,8 @@ Container.standard.register(.gitlabService) { resolver in
 
 ```Swift
 extension InjectIdentifier {
-    static var githubService: InjectIdentifier<FetchService> { .by(type: FetchService.self, withKey: "github") }
-    static var gitlabService: InjectIdentifier<FetchService> { .by(type: FetchService.self, withKey: "gitlab") }
+    static var githubService: InjectIdentifier<FetchService> { .by(type: FetchService.self, key: "github") }
+    static var gitlabService: InjectIdentifier<FetchService> { .by(type: FetchService.self, key: "gitlab") }
     static var externalService: InjectIdentifier<ExternalSingletonService> { .by(type: ExternalSingletonService.self) }
 }
 ```
@@ -82,7 +82,7 @@ To resolve your dependencies, you have two ways. You can access the `Container` 
 
 ```Swift
 let githubService = try? Container.standard.resolve(.githubService)
-let gitlabService = try? Container.standard.resolve(.by(type: FetchService.self, withKey: "gitlab"))
+let gitlabService = try? Container.standard.resolve(.by(type: FetchService.self, key: "gitlab"))
 let externalService = try? Container.standard.resolve(.by(type: ExternalSingletonService.self))
 ```
 
@@ -94,7 +94,7 @@ If you use `@Injected` and have not injected yet, it will call `fatalError` with
 @Injected(.githubService)
 var githubService: FetchService
 
-@InjectedSafe(.by(type: FetchService.self, withKey: "gitlab"))
+@InjectedSafe(.by(type: FetchService.self, key: "gitlab"))
 var gitlabService: FetchService?
 
 @Injected
