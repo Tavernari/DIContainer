@@ -11,35 +11,28 @@ To register something on Container, you can use the InjectIdentifier directly or
 ### Using key directly
 
 ```Swift
-Container.standard.register(.by(key: "some_key")) { _ in
-    return SomeObjc()
-}
+Container.standard.register(.by(key: "some_key")) { _ in SomeObjc() }
 ```
 
 ### Using type directly
 
 ```Swift
-Container.standard.register(.by(type: FetchService.self)) { _ in
-    return GitHubService()
-}
+Container.standard.register(.by(type: FetchService.self)) { _ in GitHubService() }
 ``` 
 
 ### Using type with key variants
 
 ```Swift
-Container.standard.register(.by(type: FetchService.self, key: "github")) { _ in
-    return GitHubService()
-}
+Container.standard.register(.by(type: FetchService.self, key: "github")) { _ in GitHubService() }
 
-Container.standard.register(.by(type: FetchService.self, key: "gitlab")) { _ in
-    return GitlabService()
-}
+Container.standard.register(.by(type: FetchService.self, key: "gitlab")) { _ in GitlabService() }
 ```
 
 ### Resolving using other dependencies
 
 ```Swift
 Container.standard.register(.gitlabService) { resolver in
+
     let externalService = try resolver.resolve(.externalService)
     return GitlabService(externalService)
 }
@@ -49,6 +42,7 @@ Container.standard.register(.gitlabService) { resolver in
 
 ```Swift
 extension InjectIdentifier {
+
     static var githubService: InjectIdentifier<FetchService> { .by(type: FetchService.self, key: "github") }
     static var gitlabService: InjectIdentifier<FetchService> { .by(type: FetchService.self, key: "gitlab") }
     static var externalService: InjectIdentifier<ExternalSingletonService> { .by(type: ExternalSingletonService.self) }
@@ -58,20 +52,11 @@ extension InjectIdentifier {
 ### Registering with shortcuts
 
 ```Swift
-Container.standard.register(.githubService) { _ in
-    
-    GitHubService()
-}
+Container.standard.register(.githubService) { _ in GitHubService() }
 
-Container.standard.register(.gitlabService) { _ in
-    
-    GitlabService()
-}
+Container.standard.register(.gitlabService) { _ in GitlabService() }
 
-Container.standard.register(.externalService) { _ in
-    
-    ExternalSingletonService.shared
-}
+Container.standard.register(.externalService) { _ in ExternalSingletonService.shared }
 ```
 
 ## Resolving dependencies
