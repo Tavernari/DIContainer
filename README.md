@@ -25,31 +25,21 @@ To register something on Container, you can use the InjectIdentifier directly or
 ### Using key directly
 
 ```Swift
-Container.standard.register(.by(key: "some_key")) { _ in SomeObjc() }
+Container.standard.register(key: "some_key") { _ in SomeObjc() }
 ```
 
 ### Using type directly
 
 ```Swift
-Container.standard.register(.by(type: FetchService.self)) { _ in GitHubService() }
+Container.standard.register(type: FetchService.self) { _ in GitHubService() }
 ``` 
 
 ### Using type with key variants
 
 ```Swift
-Container.standard.register(.by(type: FetchService.self, key: "github")) { _ in GitHubService() }
+Container.standard.register(type: FetchService.self, key: "github") { _ in GitHubService() }
 
-Container.standard.register(.by(type: FetchService.self, key: "gitlab")) { _ in GitlabService() }
-```
-
-### Resolving using other dependencies
-
-```Swift
-Container.standard.register(.gitlabService) { resolver in
-
-    let externalService = try resolver.resolve(.externalService)
-    return GitlabService(externalService)
-}
+Container.standard.register(type: FetchService.self, key: "gitlab") { _ in GitlabService() }
 ```
 
 ### Creating shortcuts to identify by extension
@@ -71,6 +61,16 @@ Container.standard.register(.githubService) { _ in GitHubService() }
 Container.standard.register(.gitlabService) { _ in GitlabService() }
 
 Container.standard.register(.externalService) { _ in ExternalSingletonService.shared }
+```
+
+### Register using other dependencies
+
+```Swift
+Container.standard.register(.gitlabService) { resolver in
+
+    let externalService = try resolver.resolve(.externalService)
+    return GitlabService(externalService)
+}
 ```
 
 ## Resolving dependencies
