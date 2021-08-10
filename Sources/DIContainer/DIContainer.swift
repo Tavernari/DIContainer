@@ -64,6 +64,12 @@ public extension Injectable {
         self.dependencies.removeValue(forKey: identifier)
     }
     
+    func remove<Value>(type: Value.Type? = nil, key: String? = nil) {
+        
+        let identifier = InjectIdentifier.by(type: type, key: key)
+        self.dependencies.removeValue(forKey: identifier)
+    }
+    
     func removeAllDependencies() {
         
         self.dependencies.removeAll()

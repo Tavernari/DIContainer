@@ -15,7 +15,7 @@ final class SlightDIContainerTests: XCTestCase {
         XCTAssertThrowsError(try Container.standard.resolve(identifier))
     }
     
-    func testRegisterContainerWithKey() {
+    func testRegisterContainerWithKeyOnIdentifier() {
         
         let value = "result"
         let key = "key"
@@ -29,7 +29,21 @@ final class SlightDIContainerTests: XCTestCase {
         XCTAssertEqual(result, value)
     }
     
-    func testRegisterContainerWithType() {
+    func testRegisterContainerWithKey() {
+        
+        let value = "result"
+        let key = "key"
+        
+        Container.standard.register(key: key) { _ in
+            return value
+        }
+        
+        let result: String = try! Container.standard.resolve(.by(key: key))
+        
+        XCTAssertEqual(result, value)
+    }
+    
+    func testRegisterContainerWithTypeOnIdentifier() {
         
         struct ValueResult: Equatable { }
         
@@ -44,7 +58,22 @@ final class SlightDIContainerTests: XCTestCase {
         XCTAssertEqual(result, value)
     }
     
-    func testRemoveFromContainerWithType() {
+    func testRegisterContainerWithType() {
+        
+        struct ValueResult: Equatable { }
+        
+        let value = ValueResult()
+
+        Container.standard.register(type: ValueResult.self) { _ in
+            return value
+        }
+        
+        let result = try! Container.standard.resolve(.by(type: ValueResult.self))
+        
+        XCTAssertEqual(result, value)
+    }
+    
+    func testRemoveFromContainerWithTypeOnIdentifier() {
         
         struct ValueResult: Equatable { }
         
@@ -59,6 +88,25 @@ final class SlightDIContainerTests: XCTestCase {
         XCTAssertNotNil(Container.standard.dependencies[identifier])
         
         Container.standard.remove(.by(type: ValueResult.self))
+        
+        XCTAssertNil(Container.standard.dependencies[identifier])
+    }
+    
+    func testRemoveFromContainerWithType() {
+        
+        struct ValueResult: Equatable { }
+        
+        let value = ValueResult()
+
+        Container.standard.register(type: ValueResult.self) { _ in
+            return value
+        }
+        
+        let identifier = InjectIdentifier.by(type: ValueResult.self)
+        
+        XCTAssertNotNil(Container.standard.dependencies[identifier])
+        
+        Container.standard.remove(type: ValueResult.self)
         
         XCTAssertNil(Container.standard.dependencies[identifier])
     }
