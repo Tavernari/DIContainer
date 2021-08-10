@@ -53,6 +53,11 @@ public extension Injectable {
             assertionFailure(error.localizedDescription)
         }
     }
+    
+    func register<Value>(type: Value.Type? = nil, key: String? = nil, _ resolve: (Resolvable) throws -> Value) {
+        
+        self.register(.by(type: type, key: key), resolve)
+    }
 
     func remove<Value>(_ identifier: InjectIdentifier<Value>) {
         
@@ -72,5 +77,10 @@ public extension Injectable {
         }
 
         return dependency
+    }
+    
+    func resolve<Value>(type: Value.Type? = nil, key: String? = nil) throws -> Value {
+        
+        try self.resolve(.by(type: type, key: key))
     }
 }
