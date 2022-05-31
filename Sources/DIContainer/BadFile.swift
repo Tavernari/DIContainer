@@ -30,6 +30,17 @@ struct BadStruct {
                             }
                         }
                     }
+                } else {
+                    
+                    switch char1 {
+                        
+                    case "1":
+                        print("1")
+                        return
+                        
+                    default:
+                        print("default")
+                    }
                 }
             }
         }
