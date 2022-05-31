@@ -20,7 +20,7 @@ jobs:
       - name: Test & publish code coverage to Code Climate
         uses: paambaati/codeclimate-action@v3.0.0
         env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CODE_CLIMATE_TOKEN }}
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
           coverageCommand: swift test --enable-code-coverage
           debug: true
