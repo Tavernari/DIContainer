@@ -22,6 +22,7 @@ public class Container: Injectable {
 
     private let identifier: InjectIdentifier<Value>
     private let container: Resolvable
+    
     public init(_ identifier: InjectIdentifier<Value>? = nil, container: Resolvable? = nil) {
         self.identifier = identifier ?? .by(type: Value.self)
         self.container = container ?? Self.container()
@@ -42,6 +43,7 @@ public class Container: Injectable {
 
     private let identifier: InjectIdentifier<Value>
     private let container: Resolvable
+    
     public init(_ identifier: InjectIdentifier<Value>? = nil, container: Resolvable? = nil) {
         self.identifier = identifier ?? .by(type: Value.self)
         self.container = container ?? Self.container()
