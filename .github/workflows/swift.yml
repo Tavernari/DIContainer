@@ -24,5 +24,6 @@ jobs:
         with:
           coverageCommand: swift test --enable-code-coverage
           debug: true
-          coverageLocations: |
-            ${{github.workspace}}/.build/debug/codecov/*.json:lcov-json
+          coverageLocations: ${{github.workspace}}/.build/debug/codecov/*.json:lcov-json
+            
+  
