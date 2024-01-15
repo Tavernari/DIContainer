@@ -179,4 +179,23 @@ final class SlightDIContainerTests: XCTestCase {
         XCTAssertEqual(wrapperTest.text, expectedResult)
         XCTAssertEqual(wrapperTest.textSafe!, expectedResult)
     }
+    
+    func testWrapperInjectWithDefaultValueByStructType() {
+    
+        let expectedResult = "default_value"
+        
+        struct WrapperTest {
+            
+            @Injected(default: "default_value")
+            var text: String
+            
+            @InjectedSafe
+            var textSafe: String?
+        }
+        
+        var wrapperTest = WrapperTest()
+        
+        XCTAssertEqual(wrapperTest.text, expectedResult)
+        XCTAssertNil(wrapperTest.textSafe)
+    }
 }

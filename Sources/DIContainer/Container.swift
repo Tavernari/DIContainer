@@ -22,17 +22,23 @@ public class Container: Injectable {
 
     private let identifier: InjectIdentifier<Value>
     private let container: Resolvable
-    public init(_ identifier: InjectIdentifier<Value>? = nil, container: Resolvable? = nil) {
+    private let `default`: Value?
+    public init(_ identifier: InjectIdentifier<Value>? = nil, container: Resolvable? = nil, `default`: Value? = nil) {
         self.identifier = identifier ?? .by(type: Value.self)
         self.container = container ?? Self.container()
+        self.default = `default`
     }
     
     public lazy var wrappedValue: Value = {
-        do {
-            
-            return try container.resolve(identifier)
-            
-        } catch { fatalError( error.localizedDescription ) }
+        if let value = try? container.resolve(identifier) {
+            return value
+        }
+        
+        if let `default` {
+            return `default`
+        }
+        
+        fatalError("Could not resolve with \(identifier) and default is nil")
     }()
 }
 
