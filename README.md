@@ -93,6 +93,9 @@ If you use `@Injected` and have not injected yet, it will call `fatalError` with
 @Injected(.githubService)
 var githubService: FetchService
 
+@Injected(.githubService, default: FallbackService())
+var githubService: FetchService
+
 @InjectedSafe(.by(type: FetchService.self, key: "gitlab"))
 var gitlabService: FetchService?
 
