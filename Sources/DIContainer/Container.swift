@@ -11,7 +11,8 @@ public class Container: Injectable {
 
     /// A dictionary holding the dependencies.
     ///
-    /// The dependencies are stored as key-value pairs where the key is any hashable object and the value is the dependency.
+    /// The dependencies are stored as key-value pairs where the key 
+    /// is any hashable object and the value is the dependency.
     public var dependencies: [AnyHashable: Any] = [:]
 
     /// Creates a new instance of `Container`.
@@ -22,7 +23,9 @@ public class Container: Injectable {
 
 /// A property wrapper for injecting dependencies.
 ///
-/// This struct wraps a property and injects a dependency into it. If the dependency cannot be resolved and no default value is provided, it will crash the application.
+/// This struct wraps a property and injects a dependency into it. 
+/// If the dependency cannot be resolved and no default value is provided,
+/// it will crash the application.
 @propertyWrapper public struct Injected<Value> {
     
     /// Error types related to dependency injection.
@@ -51,7 +54,9 @@ public class Container: Injectable {
     
     /// The resolved value of the dependency.
     ///
-    /// This property lazily resolves the dependency. If the dependency cannot be resolved, it will use the provided default value. If both fail, the application will crash.
+    /// This property lazily resolves the dependency. 
+    /// If the dependency cannot be resolved, it will use the provided default value.
+    /// If both fail, the application will crash.
     public lazy var wrappedValue: Value = {
         if let value = try? container.resolve(identifier) {
             return value
@@ -67,7 +72,8 @@ public class Container: Injectable {
 
 /// A property wrapper for safely injecting dependencies.
 ///
-/// This struct wraps a property and injects an optional dependency into it. If the dependency cannot be resolved, the property will be nil.
+/// This struct wraps a property and injects an optional dependency into it. 
+/// If the dependency cannot be resolved, the property will be nil.
 @propertyWrapper public struct InjectedSafe<Value> {
     
     /// Returns the standard container used for resolving dependencies.
@@ -88,6 +94,7 @@ public class Container: Injectable {
     
     /// The optionally resolved value of the dependency.
     ///
-    /// This property lazily tries to resolve the dependency. If the dependency cannot be resolved, the property will be nil.
+    /// This property lazily tries to resolve the dependency. 
+    /// If the dependency cannot be resolved, the property will be nil.
     public lazy var wrappedValue: Value? = try? container.resolve(identifier)
 }

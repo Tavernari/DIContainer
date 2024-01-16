@@ -11,7 +11,8 @@ public protocol Resolvable {
     func resolve<Value>(_ identifier: InjectIdentifier<Value>) throws -> Value
 }
 
-/// An enumeration representing errors that can occur during the resolution of dependencies.
+/// An enumeration representing errors 
+/// that can occur during the resolution of dependencies.
 public enum ResolvableError: Error {
     
     /// Indicates that a dependency could not be found.
@@ -22,7 +23,8 @@ public enum ResolvableError: Error {
     case dependencyNotFound(Any.Type?, String?)
 }
 
-/// Extension to make `ResolvableError` conform to `LocalizedError`, providing a localized description of the error.
+/// Extension to make `ResolvableError` conform 
+/// to `LocalizedError`, providing a localized description of the error.
 extension ResolvableError: LocalizedError {
     
     /// A localized description of the error.
