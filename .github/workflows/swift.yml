@@ -11,10 +11,10 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Install Swift
-        uses: slashmo/install-swift@v0.4.0
+      - name: Swift Setup
+        uses: YOCKOW/Action-setup-swift@v1.1.20
         with:
-          version: "6.0"
+          swift-version: 6.0
           
       - name: Get Sources
         uses: actions/checkout@v2
