@@ -1,4 +1,4 @@
-[![Swift](https://github.com/Tavernari/DIContainer/actions/workflows/swift.yml/badge.svg?branch=main)](https://github.com/Tavernari/DIContainer/actions/workflows/swift.yml) [![Maintainability](https://api.codeclimate.com/v1/badges/cd5be8b1ddef4220dd29/maintainability)](https://codeclimate.com/github/Tavernari/DIContainer/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/cd5be8b1ddef4220dd29/test_coverage)](https://codeclimate.com/github/Tavernari/DIContainer/test_coverage)
+[![Swift](https://github.com/Tavernari/DIContainer/actions/workflows/swift.yml/badge.svg?branch=main)](https://github.com/Tavernari/DIContainer/actions/workflows/swift.yml) [![Coverage](https://img.shields.io/badge/Coverage-85%25-brightgreen)](https://github.com/Tavernari/DIContainer/actions)
 
 # 🏺 DIContainer Swift
 
