@@ -1,36 +1,21 @@
-import XCTest
+import Testing
 @testable import DIContainer
 
-final class SlightDIContainerTests: XCTestCase {
+@Suite("SlightDIContainerTests", .serialized)
+struct SlightDIContainerTests {
   
-    override func tearDown() {
-        super.tearDown()
-        
+    init() {
         Container.standard.removeAllDependencies()
     }
     
-    func testResolveUnavailableInjection() throws {
-        
+    @Test func resolveUnavailableInjection() {
         let identifier = InjectIdentifier<String>.by(key: "key")
-        XCTAssertThrowsError(try Container.standard.resolve(identifier))
-    }
-    
-    func testRegisterContainerWithKeyOnIdentifier() {
-        
-        let value = "result"
-        let key = "key"
-        
-        Container.standard.register(.by(key: key)) { _ in
-            return value
+        #expect(throws: (any Error).self) {
+            try Container.standard.resolve(identifier)
         }
-        
-        let result: String = try! Container.standard.resolve(.by(key: key))
-        
-        XCTAssertEqual(result, value)
     }
     
-    func testRegisterContainerWithKey() {
-        
+    @Test func registerContainerWithKey() {
         let value = "result"
         let key = "key"
         
@@ -39,14 +24,23 @@ final class SlightDIContainerTests: XCTestCase {
         }
         
         let result: String = try! Container.standard.resolve(.by(key: key))
+        #expect(result == value)
+    }
+
+    @Test func registerContainerWithKeyOnIdentifier() {
+        let value = "result"
+        let key = "key"
         
-        XCTAssertEqual(result, value)
+        Container.standard.register(.by(key: key)) { _ in
+            return value
+        }
+        
+        let result: String = try! Container.standard.resolve(.by(key: key))
+        #expect(result == value)
     }
     
-    func testRegisterContainerWithTypeOnIdentifier() {
-        
+    @Test func registerContainerWithTypeOnIdentifier() {
         struct ValueResult: Equatable { }
-        
         let value = ValueResult()
 
         Container.standard.register(.by(type: ValueResult.self)) { _ in
@@ -54,14 +48,11 @@ final class SlightDIContainerTests: XCTestCase {
         }
         
         let result = try! Container.standard.resolve(.by(type: ValueResult.self))
-        
-        XCTAssertEqual(result, value)
+        #expect(result == value)
     }
     
-    func testRegisterContainerWithType() {
-        
+    @Test func registerContainerWithType() {
         struct ValueResult: Equatable { }
-        
         let value = ValueResult()
 
         Container.standard.register(type: ValueResult.self) { _ in
@@ -69,14 +60,11 @@ final class SlightDIContainerTests: XCTestCase {
         }
         
         let result = try! Container.standard.resolve(.by(type: ValueResult.self))
-        
-        XCTAssertEqual(result, value)
+        #expect(result == value)
     }
     
-    func testRemoveFromContainerWithTypeOnIdentifier() {
-        
+    @Test func removeFromContainerWithTypeOnIdentifier() {
         struct ValueResult: Equatable { }
-        
         let value = ValueResult()
 
         Container.standard.register(.by(type: ValueResult.self)) { _ in
@@ -84,18 +72,14 @@ final class SlightDIContainerTests: XCTestCase {
         }
         
         let identifier = InjectIdentifier.by(type: ValueResult.self)
-        
-        XCTAssertNotNil(Container.standard.dependencies[identifier])
+        #expect(Container.standard.dependencies[identifier] != nil)
         
         Container.standard.remove(.by(type: ValueResult.self))
-        
-        XCTAssertNil(Container.standard.dependencies[identifier])
+        #expect(Container.standard.dependencies[identifier] == nil)
     }
     
-    func testRemoveFromContainerWithType() {
-        
+    @Test func removeFromContainerWithType() {
         struct ValueResult: Equatable { }
-        
         let value = ValueResult()
 
         Container.standard.register(type: ValueResult.self) { _ in
@@ -103,70 +87,34 @@ final class SlightDIContainerTests: XCTestCase {
         }
         
         let identifier = InjectIdentifier.by(type: ValueResult.self)
-        
-        XCTAssertNotNil(Container.standard.dependencies[identifier])
+        #expect(Container.standard.dependencies[identifier] != nil)
         
         Container.standard.remove(type: ValueResult.self)
-        
-        XCTAssertNil(Container.standard.dependencies[identifier])
+        #expect(Container.standard.dependencies[identifier] == nil)
     }
     
-    func testWrapperInjectByKey() {
-    
+    @Test func wrapperInjectByKey() {
         let expectedResult = "result"
-
-        
         Container.standard.register(.by(key: "textKey")) { _ in
-            
             return expectedResult
         }
         
         class WrapperTest {
-            
             @Injected(.by(key: "textKey"))
             var text: String
         }
         
         let wrapperTest = WrapperTest()
-        
-        XCTAssertEqual(wrapperTest.text, expectedResult)
+        #expect(wrapperTest.text == expectedResult)
     }
     
-    func testWrapperInjectByType() {
-    
+    @Test func wrapperInjectByType() {
         let expectedResult = "result"
-
         Container.standard.register(.by(type: String.self)) { _ in
-            
             return expectedResult
         }
         
         class WrapperTest {
-            
-            @Injected
-            var text: String
-            
-            @InjectedSafe
-            var textSafe: String?
-        }
-        
-        let wrapperTest = WrapperTest()
-        
-        XCTAssertEqual(wrapperTest.text, expectedResult)
-        XCTAssertEqual(wrapperTest.textSafe!, expectedResult)
-    }
-    
-    func testWrapperInjectByStructType() {
-    
-        let expectedResult = "result"
-
-        Container.standard.register(.by(type: String.self)) { _ in
-            
-            return expectedResult
-        }
-        
-        struct WrapperTest {
-            
             @Injected
             var text: String
             
@@ -175,17 +123,33 @@ final class SlightDIContainerTests: XCTestCase {
         }
         
         var wrapperTest = WrapperTest()
-        
-        XCTAssertEqual(wrapperTest.text, expectedResult)
-        XCTAssertEqual(wrapperTest.textSafe!, expectedResult)
+        #expect(wrapperTest.text == expectedResult)
+        #expect(wrapperTest.textSafe == expectedResult)
     }
     
-    func testWrapperInjectWithDefaultValueByStructType() {
+    @Test func wrapperInjectByStructType() {
+        let expectedResult = "result"
+        Container.standard.register(.by(type: String.self)) { _ in
+            return expectedResult
+        }
+        
+        struct WrapperTest {
+            @Injected
+            var text: String
+            
+            @InjectedSafe
+            var textSafe: String?
+        }
+        
+        var wrapperTest = WrapperTest()
+        #expect(wrapperTest.text == expectedResult)
+        #expect(wrapperTest.textSafe == expectedResult)
+    }
     
+    @Test func wrapperInjectWithDefaultValueByStructType() {
         let expectedResult = "default_value"
         
         struct WrapperTest {
-            
             @Injected(default: "default_value")
             var text: String
             
@@ -194,8 +158,7 @@ final class SlightDIContainerTests: XCTestCase {
         }
         
         var wrapperTest = WrapperTest()
-        
-        XCTAssertEqual(wrapperTest.text, expectedResult)
-        XCTAssertNil(wrapperTest.textSafe)
+        #expect(wrapperTest.text == expectedResult)
+        #expect(wrapperTest.textSafe == nil)
     }
 }
