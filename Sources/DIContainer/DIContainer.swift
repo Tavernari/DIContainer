@@ -45,13 +45,12 @@ extension ResolvableError: LocalizedError {
 /// A protocol representing an object that can inject dependencies.
 ///
 /// Conforming types can register, remove, and resolve dependencies.
-public protocol Injectable: Resolvable, AnyObject {
+public protocol Injectable: Resolvable, AnyObject, Sendable {
     
     /// Initializes a new instance.
     init()
 
-    /// A dictionary to hold dependencies.
-    var dependencies: [AnyHashable: Any] { get set }
+
 
     /// Registers a dependency with an identifier.
     ///
@@ -64,6 +63,9 @@ public protocol Injectable: Resolvable, AnyObject {
     ///
     /// - Parameter identifier: The identifier for the dependency to be removed.
     func remove<Value>(_ identifier: InjectIdentifier<Value>)
+
+    /// Removes all dependencies from the container.
+    func removeAllDependencies()
 }
 
 /// Default implementations for the `Injectable` protocol.
@@ -75,11 +77,7 @@ public extension Injectable {
     ///   - identifier: The identifier for the dependency.
     ///   - resolve: A closure that resolves the dependency.
     func register<Value>(_ identifier: InjectIdentifier<Value>, _ resolve: (Resolvable) throws -> Value) {
-        do {
-            self.dependencies[identifier] = try resolve(self)
-        } catch {
-            assertionFailure(error.localizedDescription)
-        }
+        fatalError("Implement this method in the conforming class")
     }
     
     /// Convenience method to register a dependency using type and optional key.
@@ -96,7 +94,7 @@ public extension Injectable {
     ///
     /// - Parameter identifier: The identifier for the dependency to be removed.
     func remove<Value>(_ identifier: InjectIdentifier<Value>) {
-        self.dependencies.removeValue(forKey: identifier)
+        fatalError("Implement this method in the conforming class")
     }
     
     /// Convenience method to remove a dependency using type and optional key.
@@ -106,12 +104,12 @@ public extension Injectable {
     ///   - key: An optional key for the dependency.
     func remove<Value>(type: Value.Type? = nil, key: String? = nil) {
         let identifier = InjectIdentifier.by(type: type, key: key)
-        self.dependencies.removeValue(forKey: identifier)
+        self.remove(identifier)
     }
     
     /// Removes all dependencies from the container.
     func removeAllDependencies() {
-        self.dependencies.removeAll()
+        fatalError("Implement this method in the conforming class")
     }
     
     /// Resolves a dependency based on an identifier.
@@ -120,10 +118,7 @@ public extension Injectable {
     /// - Throws: `ResolvableError.dependencyNotFound` if the dependency cannot be found.
     /// - Returns: The resolved dependency of the given type `Value`.
     func resolve<Value>(_ identifier: InjectIdentifier<Value>) throws -> Value {
-        guard let dependency = dependencies[identifier] as? Value else {
-            throw ResolvableError.dependencyNotFound(identifier.type, identifier.key)
-        }
-        return dependency
+        fatalError("Implement this method in the conforming class")
     }
     
     /// Convenience method to resolve a dependency using type and optional key.

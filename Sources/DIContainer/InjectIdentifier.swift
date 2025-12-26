@@ -1,7 +1,7 @@
 import Foundation
 
 /// A structure used to uniquely identify dependencies for injection.
-public struct InjectIdentifier<Value> {
+public struct InjectIdentifier<Value>: Sendable {
 
     /// The type of the value to be injected.
     private(set) var type: Value.Type? = nil

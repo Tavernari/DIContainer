@@ -2,130 +2,117 @@
 
 # 🏺 DIContainer Swift
 
-It is an ultra-light dependency injection container made to help developers to handle dependencies easily.
-We know that handle with dependency injection is hard and generates boilerplate code a lot. 
-The main idea of this lib is to keep it simples and light, it should be direct and intuitive, even using the property wrapper.
+A lightweight, thread-safe dependency injection container for Swift, designed to be simple, intuitive, and boilerplate-free.
 
-#### What is Dependency Injection?
+**Now fully compatible with Swift 6 and strict concurrency!** 🚀
+
+## Features
+
+- **Ultra-lightweight**: Minimal footprint and overhead.
+- **Thread-Safe**: Uses `NSRecursiveLock` and `@unchecked Sendable` to guarantee safety across concurrently executing tasks.
+- **Swift 6 Ready**: Fully supports strict concurrency checking.
+- **Simple API**: Register and resolve dependencies with ease.
+- **Property Wrappers**: elegant injection using `@Injected` and `@InjectedSafe`.
+
+## Concepts
+
+### What is Dependency Injection?
 
 > The intent behind dependency injection is to achieve separation of concerns of construction and use of objects. This can increase readability and code reuse.
-> Dependency injection is one form of the broader technique of inversion of control. A client who wants to call some services should not have to know how to construct those services. Instead, the client delegates to external code (the injector). The client is not aware of the injector.[2] The injector passes the services, which might exist or be constructed by the injector itself, to the client. The client then uses the services.
-Font - [Wikipedia](https://en.wikipedia.org/wiki/Dependency_injection)
 
-#### What is DI Container?
+### What is a DI Container?
 
-> IoC Container (a.k.a. DI Container) is a framework for implementing automatic dependency injection. It manages object creation and it's life-time, and also injects dependencies to the class.
-> The IoC container creates an object of the specified class and also injects all the dependency objects through a constructor, a property or a method at run time and disposes it at the appropriate time. This is done so that we don't have to create and manage objects manually.
-Font - [tutorialsteacher](https://www.tutorialsteacher.com/ioc/ioc-container)
+> An IoC Container (a.k.a. DI Container) is a framework for implementing automatic dependency injection. It manages object creation and its lifetime, and also injects dependencies into the class.
 
-## Registering dependencies
-
-To register something on Container, you can use the InjectIdentifier directly or make an extension to create helpers to identify it.
-
-### Using key directly
-
-```Swift
-Container.standard.register(key: "some_key") { _ in SomeObjc() }
-```
-
-### Using type directly
-
-```Swift
-Container.standard.register(type: FetchService.self) { _ in GitHubService() }
-``` 
-
-### Using type with key variants
-
-```Swift
-Container.standard.register(type: FetchService.self, key: "github") { _ in GitHubService() }
-
-Container.standard.register(type: FetchService.self, key: "gitlab") { _ in GitlabService() }
-```
-
-### Creating shortcuts to identify by extension
-
-```Swift
-extension InjectIdentifier {
-
-    static var githubService: InjectIdentifier<FetchService> { .by(type: FetchService.self, key: "github") }
-    static var gitlabService: InjectIdentifier<FetchService> { .by(type: FetchService.self, key: "gitlab") }
-    static var externalService: InjectIdentifier<ExternalSingletonService> { .by(type: ExternalSingletonService.self) }
-}
-```
-
-### Registering with shortcuts
-
-```Swift
-Container.standard.register(.githubService) { _ in GitHubService() }
-
-Container.standard.register(.gitlabService) { _ in GitlabService() }
-
-Container.standard.register(.externalService) { _ in ExternalSingletonService.shared }
-```
-
-### Register using other dependencies
-
-```Swift
-Container.standard.register(.gitlabService) { resolver in
-
-    let externalService = try resolver.resolve(.externalService)
-    return GitlabService(externalService)
-}
-```
-
-## Resolving dependencies
-
-To resolve your dependencies, you have two ways. You can access the `Container` directly or use `@Injected` to do it automatically.
-
-### Using resolve from Container
-
-```Swift
-let githubService = try? Container.standard.resolve(.githubService)
-let gitlabService = try? Container.standard.resolve(.by(type: FetchService.self, key: "gitlab"))
-let externalService = try? Container.standard.resolve(.by(type: ExternalSingletonService.self))
-```
-
-### Using injection with @propertyWrapper
-
-If you use `@Injected` and have not injected yet, it will call `fatalError` with an error message. If you do not want this behavior, you should use `@InjectedSafe`, but using `@InjectedSafe`, you will get an optional result.
-
-```Swift
-@Injected(.githubService)
-var githubService: FetchService
-
-@Injected(.githubService, default: FallbackService())
-var githubService: FetchService
-
-@InjectedSafe(.by(type: FetchService.self, key: "gitlab"))
-var gitlabService: FetchService?
-
-@Injected
-var externalService: ExternalSingletonService
-```
-
-## Instalation
+## Installation
 
 ### Swift Package Manager
 
-in `Package.swift` add the following:
+Add `DIContainer` as a dependency in your `Package.swift`:
 
 ```swift
 dependencies: [
-    // Dependencies declare other packages that this package depends on.
-    // .package(url: /* package url */, from: "1.0.0"),
-    .package(url: "https://github.com/Tavernari/DIContainer", from: "0.2.0")
+    .package(url: "https://github.com/Tavernari/DIContainer.git", from: "0.3.0")
 ],
 targets: [
     .target(
         name: "MyProject",
-        dependencies: [..., "DIContainer"]
+        dependencies: ["DIContainer"]
     )
-    ...
 ]
 ```
 
-### Cocoapds
+## Usage
 
-```ruby
-pod 'DIContainer-swift', '~> 0.2.0'
+### Registering Dependencies
+
+You can register dependencies using a key, a type, or a mix of both.
+
+```swift
+// Register by key
+Container.standard.register(key: "api_key") { _ in "123456" }
+
+// Register by type
+Container.standard.register(type: NetworkService.self) { _ in NetworkService() }
+
+// Register by type with a key (for multiple implementations)
+Container.standard.register(type: Storage.self, key: "cache") { _ in CacheStorage() }
+Container.standard.register(type: Storage.self, key: "disk") { _ in DiskStorage() }
+```
+
+#### Using Convenience Extensions (Recommended)
+
+Define type-safe identifiers for your dependencies:
+
+```swift
+extension InjectIdentifier {
+    static var githubService: InjectIdentifier<FetchService> { .by(type: FetchService.self, key: "github") }
+    static var config: InjectIdentifier<AppConfig> { .by(type: AppConfig.self) }
+}
+
+// Register using extension
+Container.standard.register(.githubService) { _ in GitHubService() }
+Container.standard.register(.config) { _ in AppConfig.shared }
+```
+
+### Resolving Dependencies
+
+You can resolve dependencies directly from the container or using property wrappers.
+
+#### Direct Resolution
+
+```swift
+let service = try? Container.standard.resolve(.githubService)
+```
+
+#### Property Wrappers
+
+Use `@Injected` for mandatory dependencies (crashes if missing) and `@InjectedSafe` for optional ones.
+
+```swift
+class MyViewModel {
+    // Crashes if not found!
+    @Injected(.githubService)
+    var service: FetchService
+    
+    // Provide a default value
+    @Injected(.config, default: AppConfig.default)
+    var config: AppConfig
+    
+    // Optional, nil if not found
+    @InjectedSafe(.by(key: "analytics"))
+    var analytics: AnalyticsService?
+}
+```
+
+## Thread Safety & Swift 6
+
+This library is designed to work safely in concurrent environments. The `Container` is `Sendable` and protects its internal storage with a recursive lock, allowing you to register and resolve dependencies from any thread without race conditions.
+
+```swift
+// Safe to use in concurrently executing code
+Task {
+    let service = try? Container.standard.resolve(.githubService)
+    await service?.fetchData()
+}
 ```

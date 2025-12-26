@@ -1,24 +1,71 @@
+import Foundation
+
 /// `Container`: A singleton class to manage dependency injections.
 ///
 /// This class provides a shared instance to manage dependencies across the application.
 /// It allows for registering and retrieving dependencies via a dictionary.
-public class Container: Injectable {
+public final class Container: Injectable, @unchecked Sendable {
     
     /// The shared instance of `Container`.
     ///
     /// Use this static property to access the same instance of `Container` throughout the application.
-    public static var standard = Container()
+    public static let standard = Container()
+
+    private let lock = NSRecursiveLock()
+    private var _dependencies: [AnyHashable: Any] = [:]
 
     /// A dictionary holding the dependencies.
     ///
     /// The dependencies are stored as key-value pairs where the key 
     /// is any hashable object and the value is the dependency.
-    public var dependencies: [AnyHashable: Any] = [:]
+    public var dependencies: [AnyHashable: Any] {
+        get {
+            lock.lock()
+            defer { lock.unlock() }
+            return _dependencies
+        }
+        set {
+            lock.lock()
+            defer { lock.unlock() }
+            _dependencies = newValue
+        }
+    }
 
     /// Creates a new instance of `Container`.
     ///
     /// This initializer is public and required as per the `Injectable` protocol.
     required public init() {}
+
+    public func register<Value>(_ identifier: InjectIdentifier<Value>, _ resolve: (Resolvable) throws -> Value) {
+        lock.lock()
+        defer { lock.unlock() }
+        do {
+            _dependencies[identifier] = try resolve(self)
+        } catch {
+            assertionFailure(error.localizedDescription)
+        }
+    }
+
+    public func remove<Value>(_ identifier: InjectIdentifier<Value>) {
+        lock.lock()
+        defer { lock.unlock() }
+        _dependencies.removeValue(forKey: identifier)
+    }
+
+    public func removeAllDependencies() {
+        lock.lock()
+        defer { lock.unlock() }
+        _dependencies.removeAll()
+    }
+
+    public func resolve<Value>(_ identifier: InjectIdentifier<Value>) throws -> Value {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let dependency = _dependencies[identifier] as? Value else {
+            throw ResolvableError.dependencyNotFound(identifier.type, identifier.key)
+        }
+        return dependency
+    }
 }
 
 /// A property wrapper for injecting dependencies.
