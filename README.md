@@ -1,5 +1,6 @@
 [![Swift](https://github.com/Tavernari/DIContainer/actions/workflows/swift.yml/badge.svg?branch=main)](https://github.com/Tavernari/DIContainer/actions/workflows/swift.yml) [![Coverage](https://img.shields.io/badge/Coverage-85%25-brightgreen)](https://github.com/Tavernari/DIContainer/actions)
 
+![DIContainer Architecture](dicontainer_architecture.png)
 # 🏺 DIContainer Swift
 
 A lightweight, thread-safe dependency injection container for Swift, designed to be simple, intuitive, and boilerplate-free.
