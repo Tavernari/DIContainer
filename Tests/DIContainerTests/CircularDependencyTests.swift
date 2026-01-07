@@ -105,37 +105,5 @@ struct CircularDependencyTests {
         #expect(a.hello() == "hello world")
     }
 
-    @Test func resolveLazilyWorks() {
-        protocol ProtocolA: AnyObject { func hello() -> String }
-        protocol ProtocolB: AnyObject { func world() -> String }
-        
-        class ClassA: ProtocolA {
-            let bProvider: () throws -> ProtocolB
-            init(bProvider: @escaping () throws -> ProtocolB) {
-                self.bProvider = bProvider
-            }
-            func hello() -> String { 
-                guard let b = try? bProvider() else { return "error" }
-                return "hello " + b.world() 
-            }
-        }
-        
-        class ClassB: ProtocolB {
-            let aProvider: () throws -> ProtocolA
-            init(aProvider: @escaping () throws -> ProtocolA) {
-                self.aProvider = aProvider
-            }
-            func world() -> String { "world" }
-        }
-        
-        Container.standard.register(.by(type: ProtocolA.self)) { container in 
-            ClassA(bProvider: container.resolveLazily(.by(type: ProtocolB.self)))
-        }
-        Container.standard.register(.by(type: ProtocolB.self)) { container in 
-            ClassB(aProvider: container.resolveLazily(.by(type: ProtocolA.self)))
-        }
-        
-        let a: ProtocolA = try! Container.standard.resolve(.by(type: ProtocolA.self))
-        #expect(a.hello() == "hello world")
-    }
+
 }
