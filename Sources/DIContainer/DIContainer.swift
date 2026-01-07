@@ -9,6 +9,12 @@ public protocol Resolvable {
     /// - Throws: An error if the dependency cannot be resolved.
     /// - Returns: The resolved dependency of the given type `Value`.
     func resolve<Value>(_ identifier: InjectIdentifier<Value>) throws -> Value
+
+    /// Resolves a dependency lazily based on an identifier.
+    ///
+    /// - Parameter identifier: The identifier for the dependency to be resolved.
+    /// - Returns: A closure that resolves the dependency when executed.
+    func resolveLazily<Value>(_ identifier: InjectIdentifier<Value>) -> () throws -> Value
 }
 
 /// An enumeration representing errors 
@@ -130,5 +136,25 @@ public extension Injectable {
     /// - Returns: The resolved dependency of the given type `Value`.
     func resolve<Value>(type: Value.Type? = nil, key: String? = nil) throws -> Value {
         try self.resolve(.by(type: type, key: key))
+    }
+
+    /// Resolves a dependency lazily based on an identifier.
+    ///
+    /// - Parameter identifier: The identifier for the dependency to be resolved.
+    /// - Returns: A closure that resolves the dependency when executed.
+    func resolveLazily<Value>(_ identifier: InjectIdentifier<Value>) -> () throws -> Value {
+        return {
+            try self.resolve(identifier)
+        }
+    }
+    
+    /// Convenience method to resolve a dependency lazily using type and optional key.
+    ///
+    /// - Parameters:
+    ///   - type: The type of the dependency.
+    ///   - key: An optional key for the dependency.
+    /// - Returns: A closure that resolves the dependency when executed.
+    func resolveLazily<Value>(type: Value.Type? = nil, key: String? = nil) -> () throws -> Value {
+        self.resolveLazily(.by(type: type, key: key))
     }
 }
