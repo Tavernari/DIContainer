@@ -57,7 +57,7 @@ public protocol Injectable: Resolvable, AnyObject, Sendable {
     /// - Parameters:
     ///   - identifier: The identifier for the dependency.
     ///   - resolve: A closure that resolves the dependency.
-    func register<Value>(_ identifier: InjectIdentifier<Value>, _ resolve: (Resolvable) throws -> Value)
+    func register<Value>(_ identifier: InjectIdentifier<Value>, _ resolve: @escaping (Resolvable) throws -> Value)
 
     /// Removes a dependency associated with an identifier.
     ///
@@ -76,7 +76,7 @@ public extension Injectable {
     /// - Parameters:
     ///   - identifier: The identifier for the dependency.
     ///   - resolve: A closure that resolves the dependency.
-    func register<Value>(_ identifier: InjectIdentifier<Value>, _ resolve: (Resolvable) throws -> Value) {
+    func register<Value>(_ identifier: InjectIdentifier<Value>, _ resolve: @escaping (Resolvable) throws -> Value) {
         fatalError("Implement this method in the conforming class")
     }
     
@@ -86,7 +86,7 @@ public extension Injectable {
     ///   - type: The type of the dependency.
     ///   - key: An optional key for the dependency.
     ///   - resolve: A closure that resolves the dependency.
-    func register<Value>(type: Value.Type? = nil, key: String? = nil, _ resolve: (Resolvable) throws -> Value) {
+    func register<Value>(type: Value.Type? = nil, key: String? = nil, _ resolve: @escaping (Resolvable) throws -> Value) {
         self.register(.by(type: type, key: key), resolve)
     }
     

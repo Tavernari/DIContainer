@@ -11,8 +11,13 @@ public final class Container: Injectable, @unchecked Sendable {
     /// Use this static property to access the same instance of `Container` throughout the application.
     public static let standard = Container()
 
+    private enum DependencyEntry {
+        case instance(Any)
+        case factory((Resolvable) throws -> Any)
+    }
+
     private let lock = NSRecursiveLock()
-    private var _dependencies: [AnyHashable: Any] = [:]
+    private var _dependencies: [AnyHashable: DependencyEntry] = [:]
 
     /// A dictionary holding the dependencies.
     ///
@@ -22,12 +27,29 @@ public final class Container: Injectable, @unchecked Sendable {
         get {
             lock.lock()
             defer { lock.unlock() }
-            return _dependencies
+            
+            var dependencies: [AnyHashable: Any] = [:]
+            for (key, value) in _dependencies {
+                switch value {
+                case .instance(let instance):
+                    dependencies[key] = instance
+                case .factory(let factory):
+                    // Factories are exposed as closures to maintain compatibility with 
+                    // existence checks (dependencies[id] != nil).
+                    dependencies[key] = factory
+                }
+            }
+            return dependencies
         }
         set {
             lock.lock()
             defer { lock.unlock() }
-            _dependencies = newValue
+             
+            var newDependencies: [AnyHashable: DependencyEntry] = [:]
+            for (key, value) in newValue {
+                newDependencies[key] = .instance(value)
+            }
+            _dependencies = newDependencies
         }
     }
 
@@ -36,14 +58,10 @@ public final class Container: Injectable, @unchecked Sendable {
     /// This initializer is public and required as per the `Injectable` protocol.
     required public init() {}
 
-    public func register<Value>(_ identifier: InjectIdentifier<Value>, _ resolve: (Resolvable) throws -> Value) {
+    public func register<Value>(_ identifier: InjectIdentifier<Value>, _ resolve: @escaping (Resolvable) throws -> Value) {
         lock.lock()
         defer { lock.unlock() }
-        do {
-            _dependencies[identifier] = try resolve(self)
-        } catch {
-            assertionFailure(error.localizedDescription)
-        }
+        _dependencies[identifier] = .factory(resolve)
     }
 
     public func remove<Value>(_ identifier: InjectIdentifier<Value>) {
@@ -61,10 +79,29 @@ public final class Container: Injectable, @unchecked Sendable {
     public func resolve<Value>(_ identifier: InjectIdentifier<Value>) throws -> Value {
         lock.lock()
         defer { lock.unlock() }
-        guard let dependency = _dependencies[identifier] as? Value else {
+        
+        guard let entry = _dependencies[identifier] else {
             throw ResolvableError.dependencyNotFound(identifier.type, identifier.key)
         }
-        return dependency
+        
+        switch entry {
+        case .instance(let instance):
+            guard let castedInstance = instance as? Value else {
+                throw ResolvableError.dependencyNotFound(identifier.type, identifier.key)
+            }
+            return castedInstance
+        case .factory(let factory):
+            let instance = try factory(self)
+            guard let castedInstance = instance as? Value else {
+                throw ResolvableError.dependencyNotFound(identifier.type, identifier.key)
+            }
+            // Cache the resolved instance to ensure singleton behavior if desired,
+            // or just to avoid re-running factory if it was meant to be one-time.
+            // Based on original implementation being a singleton container that resolved once at registration,
+            // we should cache the result to maintain "Singleton" scope behavior for the life of the container.
+            _dependencies[identifier] = .instance(castedInstance)
+            return castedInstance
+        }
     }
 }
 
