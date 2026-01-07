@@ -13,6 +13,7 @@ A lightweight, thread-safe dependency injection container for Swift, designed to
 - **Thread-Safe**: Uses `NSRecursiveLock` and `@unchecked Sendable` to guarantee safety across concurrently executing tasks.
 - **Swift 6 Ready**: Fully supports strict concurrency checking.
 - **Simple API**: Register and resolve dependencies with ease.
+- **Circular Dependencies**: Supports circular dependencies via lazy registration.
 - **Property Wrappers**: elegant injection using `@Injected` and `@InjectedSafe`.
 
 ## Concepts
@@ -103,6 +104,39 @@ class MyViewModel {
     // Optional, nil if not found
     @InjectedSafe(.by(key: "analytics"))
     var analytics: AnalyticsService?
+}
+```
+
+### Circular Dependencies and Lazy Resolution
+
+DIContainer supports circular dependencies through **Lazy Registration**. Dependencies registered via `register` are not instantiated until they are resolved.
+
+To break a circular dependency cycle (e.g., A needs B, and B needs A), use `@Injected` property wrappers (which resolve lazily) or the `resolveLazily` method.
+
+#### Using `resolveLazily`
+
+For manual control, use `resolveLazily` to get a closure that resolves the dependency only when called.
+
+```swift
+class ServiceA {
+    let bProvider: () throws -> ServiceB
+    init(bProvider: @escaping () throws -> ServiceB) { self.bProvider = bProvider }
+    func doSomething() { try? bProvider().action() }
+}
+
+class ServiceB {
+    let a: ServiceA
+    init(a: ServiceA) { self.a = a }
+    func action() {}
+}
+
+Container.standard.register(.by(type: ServiceA.self)) { c in
+    // Pass a closure that resolves ServiceB later
+    ServiceA(bProvider: c.resolveLazily(.by(type: ServiceB.self)))
+}
+
+Container.standard.register(.by(type: ServiceB.self)) { c in
+    ServiceB(a: try c.resolve(.by(type: ServiceA.self)))
 }
 ```
 
