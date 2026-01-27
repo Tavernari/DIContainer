@@ -120,7 +120,7 @@ struct SlightDIContainerTests {
             var textSafe: String?
         }
         
-        var wrapperTest = WrapperTest()
+        let wrapperTest = WrapperTest()
         #expect(wrapperTest.text == expectedResult)
         #expect(wrapperTest.textSafe == expectedResult)
     }
@@ -139,7 +139,7 @@ struct SlightDIContainerTests {
             var textSafe: String?
         }
         
-        var wrapperTest = WrapperTest()
+        let wrapperTest = WrapperTest()
         #expect(wrapperTest.text == expectedResult)
         #expect(wrapperTest.textSafe == expectedResult)
     }
@@ -159,7 +159,7 @@ struct SlightDIContainerTests {
             var textSafe: UniqueDefaultTestType?
         }
         
-        var wrapperTest = WrapperTest()
+        let wrapperTest = WrapperTest()
         #expect(wrapperTest.text == defaultValue)
         #expect(wrapperTest.textSafe == nil)
     }

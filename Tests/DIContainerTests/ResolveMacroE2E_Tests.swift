@@ -108,7 +108,7 @@ struct ResolveMacroE2E_Tests {
             Config_Workflow()
         }
         container.register(type: Logger_Workflow.self) { c in
-            let (config,): (Config_Workflow,) = try c.resolveAll()
+            let config: Config_Workflow = try c.resolve(.by(type: Config_Workflow.self))
             return Logger_Workflow(config: config)
         }
         
