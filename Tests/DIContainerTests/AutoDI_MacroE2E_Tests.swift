@@ -181,10 +181,87 @@ class ServiceX: ProtocolX {
 @AutoRegister(ProtocolY.self)
 class ServiceY: ProtocolY {
     @AutoInjected var x: ProtocolX
-    
+
     init() {}
-    
+
     func respond(to message: String) -> String {
         "Y says: \(message)"
     }
+}
+
+// MARK: - @AutoInjected(identifier:) E2E Tests
+
+/// Service identifier for typed identification
+extension InjectIdentifier where Value == PremiumService {
+    static var premium: InjectIdentifier<Value> { .by(key: "premium") }
+}
+
+/// Protocol for premium service
+protocol PremiumServiceProtocol {
+    func getFeatures() -> String
+}
+
+/// Standard service implementation
+@AutoRegister(PremiumServiceProtocol.self)
+struct StandardService: PremiumServiceProtocol {
+    init() {}
+
+    func getFeatures() -> String {
+        "standard features"
+    }
+}
+
+/// Premium service implementation registered with key
+struct PremiumService: PremiumServiceProtocol {
+    func getFeatures() -> String {
+        "premium features"
+    }
+}
+
+@Suite("AutoInjectedIdentifierE2E_Tests", .serialized)
+struct AutoInjectedIdentifierE2E_Tests {
+
+    @Test func autoInjectedWithIdentifierByKey() throws {
+        // Register standard service without key
+        Container.standard.bootstrap(StandardService.self)
+
+        // Register premium service with key
+        Container.standard.register(type: PremiumServiceProtocol.self, key: "premium") { _ in
+            PremiumService()
+        }
+
+        // Use @AutoInjected(identifier:) to inject specific implementation
+        // Note: Must use a class (not struct) because the getter needs to cache the value
+        class ViewModel {
+            @AutoInjected(identifier: InjectIdentifier<PremiumServiceProtocol>.by(key: "premium"))
+            var service: PremiumServiceProtocol
+
+            init() {}
+        }
+
+        let vm = ViewModel()
+        #expect(vm.service.getFeatures() == "premium features")
+    }
+
+    @Test func autoInjectedWithIdentifierByTypeAndKey() throws {
+        // Register standard service without key
+        Container.standard.bootstrap(StandardService.self)
+
+        // Register premium service with key
+        Container.standard.register(type: PremiumServiceProtocol.self, key: "premium_v2") { _ in
+            PremiumService()
+        }
+
+        // Use @AutoInjected(identifier:) with type and key
+        class ViewModel {
+            @AutoInjected(identifier: InjectIdentifier<PremiumServiceProtocol>.by(type: PremiumServiceProtocol.self, key: "premium_v2"))
+            var service: PremiumServiceProtocol
+
+            init() {}
+        }
+
+        let vm = ViewModel()
+        #expect(vm.service.getFeatures() == "premium features")
+    }
+
 }

@@ -59,6 +59,19 @@ public macro AutoInjected(key: String) = #externalMacro(
     type: "AutoInjectedMacro"
 )
 
+/// Zero-overhead property injection with an explicit identifier.
+///
+/// Usage:
+/// ```swift
+/// @AutoInjected(identifier: InjectIdentifier<MyProtocol>.by(key: "premium")) var premium: MyProtocol
+/// ```
+@attached(accessor)
+@attached(peer, names: prefixed(_))
+public macro AutoInjected<T>(identifier: InjectIdentifier<T>) = #externalMacro(
+    module: "DIContainerMacros",
+    type: "AutoInjectedMacro"
+)
+
 // MARK: - Freestanding Expression Macros
 
 /// Resolves a dependency from the container (throwing).

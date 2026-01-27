@@ -238,7 +238,57 @@ struct AutoInjectedMacroTests {
                         return resolved
                     }
                 }
-            
+
+                private var _service: ServiceProtocol?
+            }
+            """,
+            macros: testMacros
+        )
+    }
+
+    @Test func autoInjectedWithIdentifier() {
+        assertMacroExpansion(
+            """
+            class ViewModel {
+                @AutoInjected(identifier: InjectIdentifier<ServiceProtocol>.by(key: "premium")) var service: ServiceProtocol
+            }
+            """,
+            expandedSource: """
+            class ViewModel {
+                var service: ServiceProtocol {
+                    get {
+                        if let cached = _service { return cached }
+                        let resolved = try! Container.standard.resolve(InjectIdentifier<ServiceProtocol>.by(key: "premium"))
+                        _service = resolved
+                        return resolved
+                    }
+                }
+
+                private var _service: ServiceProtocol?
+            }
+            """,
+            macros: testMacros
+        )
+    }
+
+    @Test func autoInjectedWithIdentifierByTypeAndKey() {
+        assertMacroExpansion(
+            """
+            class ViewModel {
+                @AutoInjected(identifier: InjectIdentifier<ServiceProtocol>.by(type: ServiceProtocol.self, key: "premium")) var service: ServiceProtocol
+            }
+            """,
+            expandedSource: """
+            class ViewModel {
+                var service: ServiceProtocol {
+                    get {
+                        if let cached = _service { return cached }
+                        let resolved = try! Container.standard.resolve(InjectIdentifier<ServiceProtocol>.by(type: ServiceProtocol.self, key: "premium"))
+                        _service = resolved
+                        return resolved
+                    }
+                }
+
                 private var _service: ServiceProtocol?
             }
             """,
