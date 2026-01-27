@@ -163,7 +163,7 @@ struct AuthServiceImpl: AuthService, AutoRegistrable {
     
     static func autoRegister(in container: Injectable) {
         container.register(type: AuthService.self) { c in
-            let (repo,): (UserRepository,) = try c.resolveAll()
+            let repo: UserRepository = try c.resolveAll()
             return AuthServiceImpl(userRepository: repo)
         }
     }

@@ -49,12 +49,12 @@ public struct AutoRegisterMacro: ExtensionMacro {
         // Generate the registration code
         let resolveAllTypes = initParams.map { $0.type }.joined(separator: ", ")
         let resolveAllTuple = initParams.count == 1 
-            ? "(\(resolveAllTypes),)" 
+            ? "\(resolveAllTypes)" 
             : "(\(resolveAllTypes))"
         
         let paramNames = initParams.map { $0.name }
         let resolveLetBinding = paramNames.count == 1
-            ? "let (\(paramNames[0]),)"
+            ? "let \(paramNames[0])"
             : "let (\(paramNames.joined(separator: ", ")))"
         
         let initCall = initParams.map { "\($0.label ?? $0.name): \($0.name)" }.joined(separator: ", ")

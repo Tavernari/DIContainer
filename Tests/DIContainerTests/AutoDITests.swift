@@ -10,7 +10,7 @@ struct AutoDITests {
         let container = Container()
         container.register(type: String.self) { _ in "hello" }
         
-        let (result,): (String,) = try container.resolveAll()
+        let result: String = try container.resolveAll()
         #expect(result == "hello")
     }
 
@@ -144,7 +144,7 @@ struct AutoDITests {
         // Registering a non-optional but trying to resolve as optional should fail
         // because we don't have Optional<String> registered
         #expect(throws: (any Error).self) {
-            let _: (String?,) = try container.resolveAll()
+            let _: String? = try container.resolveAll()
         }
     }
 }
@@ -199,7 +199,7 @@ struct MockServiceWithDependency: MockServiceWithDeps, AutoRegistrable {
     
     static func autoRegister(in container: Injectable) {
         container.register(type: MockServiceWithDeps.self) { c in
-            let (logger,): (MockLoggerProtocol,) = try c.resolveAll()
+            let logger: MockLoggerProtocol = try c.resolveAll()
             return MockServiceWithDependency(logger: logger)
         }
     }
