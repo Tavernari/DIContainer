@@ -1,12 +1,9 @@
 import Testing
+import Foundation
 @testable import DIContainer
 
 @Suite("DIContainerCoverageTests", .serialized)
 struct DIContainerCoverageTests {
-    
-    init() {
-        Container.standard.removeAllDependencies()
-    }
 
     @Test func resolvableErrorDescription() {
         let typeError = ResolvableError.dependencyNotFound(String.self, nil)
@@ -23,17 +20,21 @@ struct DIContainerCoverageTests {
     }
     
     @Test func containerDependenciesSetter() {
-        Container.standard.register(key: "key1") { _ in "value1" }
-        #expect(Container.standard.dependencies.count == 1)
+        let uniqueKey1 = "coverage_key1_\(UUID().uuidString)"
+        let uniqueKey2 = "coverage_key2_\(UUID().uuidString)"
+        
+        let container = Container() // Use local container for this test
+        container.register(key: uniqueKey1) { _ in "value1" }
+        #expect(container.dependencies.count == 1)
         
         // Test setter
-        Container.standard.dependencies = [:]
-        #expect(Container.standard.dependencies.isEmpty)
+        container.dependencies = [:]
+        #expect(container.dependencies.isEmpty)
         
-        let identifier = InjectIdentifier<String>.by(key: "key2")
-        Container.standard.dependencies = [identifier: "value2"]
-        #expect(Container.standard.dependencies.count == 1)
-        let resolved = try? Container.standard.resolve(identifier)
+        let identifier = InjectIdentifier<String>.by(key: uniqueKey2)
+        container.dependencies = [identifier: "value2"]
+        #expect(container.dependencies.count == 1)
+        let resolved = try? container.resolve(identifier)
         #expect(resolved == "value2")
     }
     

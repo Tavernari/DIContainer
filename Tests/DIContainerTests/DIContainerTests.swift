@@ -1,15 +1,13 @@
 import Testing
+import Foundation
 @testable import DIContainer
 
 @Suite("SlightDIContainerTests", .serialized)
 struct SlightDIContainerTests {
-  
-    init() {
-        Container.standard.removeAllDependencies()
-    }
     
     @Test func resolveUnavailableInjection() {
-        let identifier = InjectIdentifier<String>.by(key: "key")
+        // Use a UUID-based key that's guaranteed to not be registered
+        let identifier = InjectIdentifier<String>.by(key: "nonexistent_\(UUID().uuidString)")
         #expect(throws: (any Error).self) {
             try Container.standard.resolve(identifier)
         }
@@ -17,7 +15,7 @@ struct SlightDIContainerTests {
     
     @Test func registerContainerWithKey() {
         let value = "result"
-        let key = "key"
+        let key = "slight_key_\(UUID().uuidString)"
         
         Container.standard.register(key: key) { _ in
             return value
@@ -29,7 +27,7 @@ struct SlightDIContainerTests {
 
     @Test func registerContainerWithKeyOnIdentifier() {
         let value = "result"
-        let key = "key"
+        let key = "slight_id_\(UUID().uuidString)"
         
         Container.standard.register(.by(key: key)) { _ in
             return value
@@ -147,18 +145,22 @@ struct SlightDIContainerTests {
     }
     
     @Test func wrapperInjectWithDefaultValueByStructType() {
-        let expectedResult = "default_value"
+        // Use a unique type that won't be registered by other tests
+        struct UniqueDefaultTestType: Equatable {
+            let value: String
+        }
+        let defaultValue = UniqueDefaultTestType(value: "default_value")
         
         struct WrapperTest {
-            @Injected(default: "default_value")
-            var text: String
+            @Injected(default: UniqueDefaultTestType(value: "default_value"))
+            var text: UniqueDefaultTestType
             
             @InjectedSafe
-            var textSafe: String?
+            var textSafe: UniqueDefaultTestType?
         }
         
         var wrapperTest = WrapperTest()
-        #expect(wrapperTest.text == expectedResult)
+        #expect(wrapperTest.text == defaultValue)
         #expect(wrapperTest.textSafe == nil)
     }
 }

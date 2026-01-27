@@ -14,7 +14,9 @@ A lightweight, thread-safe dependency injection container for Swift, designed to
 - **Swift 6 Ready**: Fully supports strict concurrency checking.
 - **Simple API**: Register and resolve dependencies with ease.
 - **Circular Dependencies**: Supports circular dependencies via lazy registration.
-- **Property Wrappers**: elegant injection using `@Injected` and `@InjectedSafe`.
+- **Property Wrappers**: Elegant injection using `@Injected` and `@InjectedSafe`.
+- **Auto DI (NEW!)**: It works like magic ✨ — zero-boilerplate with `@AutoRegister` and `@AutoInjected`.
+- **Variadic Generics**: Resolve multiple dependencies at once with `resolveAll<each T>()`.
 
 ## Concepts
 
@@ -34,7 +36,7 @@ Add `DIContainer` as a dependency in your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/Tavernari/DIContainer.git", from: "0.4.0")
+    .package(url: "https://github.com/Tavernari/DIContainer.git", from: "0.5.0")
 ],
 targets: [
     .target(
@@ -123,4 +125,109 @@ Task {
     let service = try? Container.standard.resolve(.githubService)
     await service?.fetchData()
 }
+```
+
+## ✨ Auto DI — It Works Like Magic! (Swift 6+)
+
+Auto DI uses Swift Macros and Variadic Generics for zero-boilerplate dependency injection. Just decorate your types and it works like magic!
+
+### @AutoRegister
+
+Automatically registers a type with all its dependencies resolved:
+
+```swift
+@AutoRegister(MyServiceProtocol.self)
+struct MyService: MyServiceProtocol {
+    init(repo: RepoProtocol, logger: LoggerProtocol) {
+        // Dependencies are auto-resolved!
+    }
+}
+
+// With a key for multiple implementations
+@AutoRegister(key: "premium", as: ServiceProtocol.self)
+struct PremiumService: ServiceProtocol { ... }
+```
+
+### @AutoInjected
+
+Zero-overhead compile-time injection:
+
+```swift
+class MyViewModel {
+    @AutoInjected var service: MyServiceProtocol
+    @AutoInjected(key: "premium") var premium: ServiceProtocol
+}
+```
+
+### Container.bootstrap()
+
+Register all auto-registered types at app startup:
+
+```swift
+@main
+struct MyApp: App {
+    init() {
+        Container.standard.bootstrap(
+            MyService.self,
+            PremiumService.self
+        )
+    }
+}
+```
+
+### resolveAll<each T>()
+
+Resolve multiple dependencies in a single call:
+
+```swift
+let (repo, service, logger): (RepoProtocol, ServiceProtocol, LoggerProtocol) = try container.resolveAll()
+```
+
+### Expression Macros (New!)
+
+Use concise expression macros to resolve dependencies anywhere in your code.
+
+#### #resolve
+
+Resolves a dependency (throwing):
+
+```swift
+// Infers type from variable
+let service: MyProtocol = try #resolve
+
+// With key
+let keyed: MyProtocol = try #resolve(key: "premium")
+```
+
+#### #resolved
+
+Force-unwraps the dependency (crashes if missing):
+
+```swift
+let service: MyProtocol = #resolved
+```
+
+#### #resolvedSafe
+
+Resolves optionally (returns `nil` if missing):
+
+```swift
+let service: MyProtocol? = #resolvedSafe
+```
+
+#### Explicit Identifiers
+
+You can also pass a full identifier to any macro:
+
+```swift
+let service = #resolved(identifier: .by(type: MyService.self))
+```
+
+#### Custom Container
+
+You can resolve from a specific container using the `in:` parameter:
+
+```swift
+let customContainer = Container()
+let service = try #resolve(in: customContainer)
 ```

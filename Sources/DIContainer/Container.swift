@@ -103,6 +103,53 @@ public final class Container: Injectable, @unchecked Sendable {
             return castedInstance
         }
     }
+    
+    /// Resolves multiple dependencies at once using Variadic Generics.
+    ///
+    /// Usage:
+    /// ```swift
+    /// let (repo, service): (RepoProtocol, ServiceProtocol) = try container.resolveAll()
+    /// ```
+    public func resolveAll<each T>() throws -> (repeat each T) {
+        (repeat try self.resolve(.by(type: (each T).self)))
+    }
+    
+    // MARK: - Type-Inferred Resolution (for #resolve macros)
+    
+    /// Resolves a dependency using type inference from the context.
+    ///
+    /// Usage:
+    /// ```swift
+    /// let service: MyProtocol = try container.resolve()
+    /// ```
+    public func resolve<T>() throws -> T {
+        try self.resolve(.by(type: T.self))
+    }
+    
+    /// Resolves a dependency by key using type inference from the context.
+    ///
+    /// Usage:
+    /// ```swift
+    /// let service: MyProtocol = try container.resolve(key: "premium")
+    /// ```
+    public func resolve<T>(key: String) throws -> T {
+        try self.resolve(.by(type: T.self, key: key))
+    }
+    
+    /// Safely resolves a dependency using type inference (returns nil if not found).
+    public func resolveSafe<T>() -> T? {
+        try? self.resolve(.by(type: T.self))
+    }
+    
+    /// Safely resolves a dependency by key using type inference.
+    public func resolveSafe<T>(key: String) -> T? {
+        try? self.resolve(.by(type: T.self, key: key))
+    }
+    
+    /// Safely resolves a dependency by identifier.
+    public func resolveSafe<T>(_ identifier: InjectIdentifier<T>) -> T? {
+        try? self.resolve(identifier)
+    }
 }
 
 /// A property wrapper for injecting dependencies.
