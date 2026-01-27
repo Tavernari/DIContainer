@@ -5,10 +5,6 @@ import Testing
 @Suite("CircularDependencyTests", .serialized)
 struct CircularDependencyTests {
 
-    init() {
-        Container.standard.removeAllDependencies()
-    }
-
     @Test func circularDependencyResolution() {
         // Define protocols
         protocol ProtocolA: AnyObject {}
@@ -85,23 +81,23 @@ struct CircularDependencyTests {
     }
 
     @Test func lazyResolutionAllowsBreakingCyclesWithPropertyWrappers() {
-        protocol ProtocolA: AnyObject { func hello() -> String }
-        protocol ProtocolB: AnyObject { func world() -> String }
+        protocol LazyProtocolA: AnyObject { func hello() -> String }
+        protocol LazyProtocolB: AnyObject { func world() -> String }
         
-        class ClassA: ProtocolA {
-            @Injected var b: ProtocolB
+        class LazyClassA: LazyProtocolA {
+            @Injected(.by(type: LazyProtocolB.self)) var b: LazyProtocolB
             func hello() -> String { "hello " + b.world() }
         }
         
-        class ClassB: ProtocolB {
-            @Injected var a: ProtocolA
+        class LazyClassB: LazyProtocolB {
+            @Injected(.by(type: LazyProtocolA.self)) var a: LazyProtocolA
             func world() -> String { "world" }
         }
         
-        Container.standard.register(.by(type: ProtocolA.self)) { _ in ClassA() }
-        Container.standard.register(.by(type: ProtocolB.self)) { _ in ClassB() }
+        Container.standard.register(.by(type: LazyProtocolA.self)) { _ in LazyClassA() }
+        Container.standard.register(.by(type: LazyProtocolB.self)) { _ in LazyClassB() }
         
-        let a: ProtocolA = try! Container.standard.resolve(.by(type: ProtocolA.self))
+        let a: LazyProtocolA = try! Container.standard.resolve(.by(type: LazyProtocolA.self))
         #expect(a.hello() == "hello world")
     }
 

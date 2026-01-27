@@ -2,27 +2,51 @@
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
+import CompilerPluginSupport
 
 let package = Package(
     name: "DIContainer",
+    platforms: [
+        .macOS(.v10_15),
+        .iOS(.v13),
+        .tvOS(.v13),
+        .watchOS(.v6),
+        .macCatalyst(.v13)
+    ],
     products: [
-        // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "DIContainer",
             targets: ["DIContainer"]),
     ],
     dependencies: [
-        // Dependencies declare other packages that this package depends on.
-        // .package(url: /* package url */, from: "1.0.0"),
+        .package(url: "https://github.com/swiftlang/swift-syntax", from: "600.0.0"),
     ],
     targets: [
-        // Targets are the basic building blocks of a package. A target can define a module or a test suite.
-        // Targets can depend on other targets in this package, and on products in packages this package depends on.
+        // Macro implementation
+        .macro(
+            name: "DIContainerMacros",
+            dependencies: [
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
+            ]
+        ),
+        // Main library
         .target(
             name: "DIContainer",
-            dependencies: []),
+            dependencies: ["DIContainerMacros"]
+        ),
+        // Tests
         .testTarget(
             name: "DIContainerTests",
-            dependencies: ["DIContainer"]),
+            dependencies: ["DIContainer"]
+        ),
+        // Macro tests
+        .testTarget(
+            name: "DIContainerMacrosTests",
+            dependencies: [
+                "DIContainerMacros",
+                .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
+            ]
+        ),
     ]
 )

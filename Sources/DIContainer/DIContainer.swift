@@ -9,6 +9,17 @@ public protocol Resolvable {
     /// - Throws: An error if the dependency cannot be resolved.
     /// - Returns: The resolved dependency of the given type `Value`.
     func resolve<Value>(_ identifier: InjectIdentifier<Value>) throws -> Value
+    
+    /// Resolves multiple dependencies at once using Variadic Generics.
+    ///
+    /// Usage:
+    /// ```swift
+    /// let (repo, service, logger): (RepoProtocol, ServiceProtocol, LoggerProtocol) = try container.resolveAll()
+    /// ```
+    ///
+    /// - Returns: A tuple containing all resolved dependencies.
+    /// - Throws: `ResolvableError.dependencyNotFound` if any dependency cannot be resolved.
+    func resolveAll<each T>() throws -> (repeat each T)
 }
 
 /// An enumeration representing errors 
@@ -130,5 +141,12 @@ public extension Injectable {
     /// - Returns: The resolved dependency of the given type `Value`.
     func resolve<Value>(type: Value.Type? = nil, key: String? = nil) throws -> Value {
         try self.resolve(.by(type: type, key: key))
+    }
+    
+    /// Resolves multiple dependencies at once using Variadic Generics.
+    ///
+    /// - Returns: A tuple containing all resolved dependencies.
+    func resolveAll<each T>() throws -> (repeat each T) {
+        (repeat try self.resolve(.by(type: (each T).self)))
     }
 }
